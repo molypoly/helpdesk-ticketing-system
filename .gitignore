@@ -1,0 +1,3 @@
+node_modules/
+backend/helpdesk.db
+.env
