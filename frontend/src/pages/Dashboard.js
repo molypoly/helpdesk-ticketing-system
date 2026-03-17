@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('/api/tickets').then(r => setTickets(r.data)).finally(() => setLoading(false));
+    api.get('/api/tickets').then(r => setTickets(r.data)).finally(() => setLoading(false));
   }, []);
 
   const open = tickets.filter(t => t.status === 'Open').length;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { formatDistanceToNow } from 'date-fns';
 
 function StatusBadge({ status }) {
@@ -20,7 +20,7 @@ export default function TicketList() {
   const [priorityFilter, setPriorityFilter] = useState('');
 
   useEffect(() => {
-    axios.get('/api/tickets').then(r => setTickets(r.data)).finally(() => setLoading(false));
+    api.get('/api/tickets').then(r => setTickets(r.data)).finally(() => setLoading(false));
   }, []);
 
   const filtered = tickets.filter(t => {

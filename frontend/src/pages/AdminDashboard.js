@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { formatDistanceToNow } from 'date-fns';
 
 function StatusBadge({ status }) {
@@ -23,8 +23,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      axios.get('/api/tickets'),
-      axios.get('/api/tickets/stats')
+      api.get('/api/tickets'),
+      api.get('/api/tickets/stats')
     ]).then(([ticketsRes, statsRes]) => {
       setTickets(ticketsRes.data);
       setStats(statsRes.data);
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
   const quickUpdate = async (e, ticketId, field, value) => {
     e.stopPropagation();
     try {
-      const res = await axios.patch(`/api/tickets/${ticketId}`, { [field]: value });
+      const res = await api.patch(`/api/tickets/${ticketId}`, { [field]: value });
       setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, ...res.data } : t));
     } catch {
       alert('Update failed');
@@ -65,7 +65,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats */}
       {stats && (
         <div className="stats-grid">
           <div className="stat-card">
@@ -91,7 +90,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Filters */}
       <div className="filters-bar">
         <input className="search-input" placeholder="Search by title, ID or user…" value={search} onChange={e => setSearch(e.target.value)} />
         <select className="filter-select" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
@@ -117,7 +115,6 @@ export default function AdminDashboard() {
         </span>
       </div>
 
-      {/* Table */}
       <div className="card" style={{ padding: 0 }}>
         {filtered.length === 0 ? (
           <div className="empty-state">

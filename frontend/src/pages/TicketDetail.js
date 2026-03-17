@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import { formatDistanceToNow, format } from 'date-fns';
 
@@ -28,13 +28,13 @@ export default function TicketDetail() {
     const fetchAll = async () => {
       try {
         const [ticketRes, commentsRes] = await Promise.all([
-          axios.get(`/api/tickets/${id}`),
-          axios.get(`/api/comments/${id}`)
+          api.get(`/api/tickets/${id}`),
+          api.get(`/api/comments/${id}`)
         ]);
         setTicket(ticketRes.data);
         setComments(commentsRes.data);
         if (user.role === 'admin') {
-          const usersRes = await axios.get('/api/auth/users');
+          const usersRes = await api.get('/api/auth/users');
           setUsers(usersRes.data);
         }
       } catch (err) {
@@ -48,7 +48,7 @@ export default function TicketDetail() {
 
   const updateTicket = async (updates) => {
     try {
-      const res = await axios.patch(`/api/tickets/${id}`, updates);
+      const res = await api.patch(`/api/tickets/${id}`, updates);
       setTicket(res.data);
     } catch {
       setError('Failed to update ticket');
@@ -60,7 +60,7 @@ export default function TicketDetail() {
     if (!newComment.trim()) return;
     setSubmitting(true);
     try {
-      const res = await axios.post(`/api/comments/${id}`, { content: newComment });
+      const res = await api.post(`/api/comments/${id}`, { content: newComment });
       setComments(c => [...c, res.data]);
       setNewComment('');
     } catch {
@@ -72,7 +72,7 @@ export default function TicketDetail() {
 
   const handleDelete = async () => {
     if (!window.confirm('Delete this ticket? This cannot be undone.')) return;
-    await axios.delete(`/api/tickets/${id}`);
+    await api.delete(`/api/tickets/${id}`);
     navigate('/admin');
   };
 
@@ -100,14 +100,12 @@ export default function TicketDetail() {
       {error && <div className="alert alert-error">{error}</div>}
 
       <div className="ticket-detail">
-        {/* Main column */}
         <div>
           <div className="card" style={{ marginBottom: 20 }}>
             <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>Description</div>
             <p style={{ color: 'var(--text)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{ticket.description}</p>
           </div>
 
-          {/* Admin controls */}
           {user.role === 'admin' && (
             <div className="card" style={{ marginBottom: 20 }}>
               <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 14 }}>Admin Controls</div>
@@ -144,12 +142,10 @@ export default function TicketDetail() {
             </div>
           )}
 
-          {/* Comments */}
           <div className="card">
             <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 14 }}>
               Comments ({comments.length})
             </div>
-
             {comments.length === 0 ? (
               <div style={{ color: 'var(--text-dim)', fontSize: 13, padding: '12px 0' }}>No comments yet.</div>
             ) : (
@@ -169,7 +165,6 @@ export default function TicketDetail() {
                 ))}
               </div>
             )}
-
             <form onSubmit={handleComment} style={{ marginTop: 16 }}>
               <div className="form-group" style={{ marginBottom: 10 }}>
                 <textarea
@@ -187,11 +182,9 @@ export default function TicketDetail() {
           </div>
         </div>
 
-        {/* Sidebar metadata */}
         <div>
           <div className="card">
             <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>Ticket Info</div>
-
             <div className="ticket-meta-item">
               <div className="ticket-meta-label">Ticket ID</div>
               <div className="ticket-meta-value" style={{ fontFamily: 'var(--mono)', color: 'var(--accent)' }}>#{ticket.id}</div>

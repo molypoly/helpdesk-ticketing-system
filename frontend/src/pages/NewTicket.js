@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 export default function NewTicket() {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ export default function NewTicket() {
     e.preventDefault();
     setError(''); setLoading(true);
     try {
-      const res = await axios.post('/api/tickets', form);
+      const res = await api.post('/api/tickets', form);
       navigate(`/tickets/${res.data.id}`);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create ticket');
