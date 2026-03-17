@@ -8,17 +8,19 @@ const { initDB } = require('./db');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000'
+}));
 app.use(express.json());
 
-// Init database
-initDB();
-
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/comments', commentRoutes);
-
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+initDB().then(() => {
+  app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+}).catch(err => {
+  console.error('Failed to initialize database:', err);
+  process.exit(1);
+});
